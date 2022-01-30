@@ -6,7 +6,7 @@ import (
 	"os/exec"
 )
 
-var PID int
+var PID = make(chan int, 1)
 
 func buildVideoLink(videoId string) string {
 	host := "https://invidious.snopyta.org"
@@ -33,7 +33,8 @@ func startPlaying(m model, isAudioOnly bool) error {
 		return errStart
 	}
 
-	PID = cmd.Process.Pid // TODO
+	// Send mpv pid to channel for output in state.
+	PID <- cmd.Process.Pid
 
 	// Wait for executing command.
 	if errWait := cmd.Wait(); errWait != nil {

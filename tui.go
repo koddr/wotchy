@@ -38,23 +38,16 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "enter":
+		case "enter", " ":
 			if m.selected == "" {
 				if it, ok := m.list.SelectedItem().(item); ok {
 					m.selected = string(it.videoId)
-					m.isAudioOnly = false
-				}
-			}
-		case " ":
-			if m.selected == "" {
-				if it, ok := m.list.SelectedItem().(item); ok {
-					m.selected = string(it.videoId)
-					m.isAudioOnly = true
+					m.isAudioOnly = msg.String() == " "
 				}
 			}
 		case "w":
 			m.selected = ""
-			go stopPlaying()
+			stopPlaying()
 			return m, nil
 		default:
 			m.selected = ""
@@ -76,7 +69,7 @@ func (m model) View() string {
 	if m.selected != "" {
 		go startPlaying(m, m.isAudioOnly)
 		state += "Please wait for mpv...\n\n"
-		state += fmt.Sprintf("%s Now playing video %s (pid %d)", checkMark, inputStyle.Render(m.selected), PID)
+		state += fmt.Sprintf("%s Now playing video %s (pid %d)", checkMark, inputStyle.Render(m.selected), <-PID)
 		state += "\n\nPress any key to exit to the previous list"
 	} else {
 		state += m.list.View()
