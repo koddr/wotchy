@@ -34,12 +34,17 @@ func newItemDelegate(keys *keyMap) list.DefaultDelegate {
 			switch {
 			case key.Matches(msg, keys.playVideo), key.Matches(msg, keys.playAudio):
 				go startPlaying(videoId, key.Matches(msg, keys.playAudio)) // goroutine
-				status = fmt.Sprintf("%s start playing '%s'", tilde, title)
+				status = fmt.Sprintf("%s  '%s' playback has started", tilde, title)
+				return m.NewStatusMessage(listStatusMessageStyle(status))
+
+			case key.Matches(msg, keys.togglePause):
+				go togglePause() // goroutine
+				status = fmt.Sprintf("%s  playback has been paused/resumed", tilde)
 				return m.NewStatusMessage(listStatusMessageStyle(status))
 
 			case key.Matches(msg, keys.stopPlaying):
 				go stopPlaying() // goroutine
-				status = fmt.Sprintf("%s ok, stop playing", tilde)
+				status = fmt.Sprintf("%s  ok, playback has been stopped", tilde)
 				return m.NewStatusMessage(listStatusMessageStyle(status))
 			}
 		}
@@ -47,18 +52,25 @@ func newItemDelegate(keys *keyMap) list.DefaultDelegate {
 		return nil
 	}
 
-	help := []key.Binding{
-		keys.playVideo,
-		keys.playAudio,
-		keys.stopPlaying,
-	}
-
+	// Show short help at the start.
 	d.ShortHelpFunc = func() []key.Binding {
-		return help
+		return []key.Binding{
+			keys.playVideo,
+			keys.playAudio,
+			keys.stopPlaying,
+		}
 	}
 
+	// Show full help (by clicking `?` key).
 	d.FullHelpFunc = func() [][]key.Binding {
-		return [][]key.Binding{help}
+		return [][]key.Binding{
+			{
+				keys.playVideo,
+				keys.playAudio,
+				keys.togglePause,
+				keys.stopPlaying,
+			},
+		}
 	}
 
 	return d

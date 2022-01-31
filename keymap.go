@@ -5,6 +5,7 @@ import "github.com/charmbracelet/bubbles/key"
 type keyMap struct {
 	playVideo   key.Binding
 	playAudio   key.Binding
+	togglePause key.Binding
 	stopPlaying key.Binding
 }
 
@@ -25,6 +26,7 @@ func (d keyMap) FullHelp() [][]key.Binding {
 		{
 			d.playVideo,
 			d.playAudio,
+			d.togglePause,
 			d.stopPlaying,
 		},
 	}
@@ -39,6 +41,10 @@ func newKeyMap() *keyMap {
 		playAudio: key.NewBinding(
 			key.WithKeys(" "),
 			key.WithHelp("space", "play audio only"),
+		),
+		togglePause: key.NewBinding(
+			key.WithKeys("p"),
+			key.WithHelp("p", "pause playback"),
 		),
 		stopPlaying: key.NewBinding(
 			key.WithKeys("w"),
