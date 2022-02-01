@@ -18,12 +18,24 @@ func newModel() model {
 		}
 	)
 
-	// Setup list of loaded items.
+	// Create delegate with a new keymap.
 	delegate := newItemDelegate(delegateKeys)
+
+	// Setup list of loaded items.
 	loadedList := list.New(items, delegate, 0, 0)
 	loadedList.Title = "📺 wotchy"
 	loadedList.StatusMessageLifetime = statusMessageLifetime
+
+	// Set styles for the list itself.
 	loadedList.Styles.Title = listTitleStyle
+	loadedList.Styles.FilterPrompt = loadedList.Styles.FilterPrompt.Foreground(stone)
+	loadedList.Styles.FilterCursor = loadedList.Styles.FilterCursor.Foreground(rose)
+
+	// Set styles for each item in the list.
+	delegate.Styles.NormalTitle = delegate.Styles.SelectedTitle.Foreground(stone)
+	delegate.Styles.NormalDesc = delegate.Styles.SelectedDesc.Foreground(stone)
+	delegate.Styles.SelectedTitle = delegate.Styles.SelectedTitle.Foreground(rose).BorderLeftForeground(rose)
+	delegate.Styles.SelectedDesc = delegate.Styles.SelectedDesc.Foreground(stone).BorderLeftForeground(rose)
 
 	return model{
 		loadedList:   loadedList,
